@@ -1,0 +1,15 @@
+Source: #PACKAGE#
+Section: misc
+Priority: extra
+Maintainer: Pantelis Koukousoulas <pktoss@gmail.com>
+Build-Depends: #BUILD_DEPS#
+Standards-Version: 3.9.3
+Homepage: http://github.com/pkt/pkt-user-packages
+#Vcs-Git: http://github.com/pkt/pkt-user-packages
+
+Package: #PACKAGE#
+Architecture: all
+Depends: ${misc:Depends}
+Description: User config package
+ A package that manages the lifecycle of a user account.
+ The convention is that pkg-user-"foo" manages user account "foo".

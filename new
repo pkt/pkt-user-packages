@@ -1,0 +1,43 @@
+#!/bin/bash
+# -------------------------------------------------------------------- #
+# Syntax: ./new <pkg-user-foo>                                         #
+#    Will construct a good "skeleton package" which you can then edit  #
+#    with the specifics of the account that needs to be managed.       #
+# -------------------------------------------------------------------- #
+set -e
+
+pakname=${1}
+username=${1##pkg-user-}
+distro=`lsb_release -cs`
+dir=${PWD}
+
+mkdir ${pakname}
+cd ${pakname}
+dh_make -s --native --templates ${dir}/templates -c bsd \
+        -p ${pakname}_1.0 --rulesformat dh7
+rm -f debian/{*.ex,*.EX,README*,changelog,docs}
+sed -i 's,<url://example.com>,http://github.com/pkt/pkt-user-packages,g' debian/copyright
+sed -i '4,8d'                      debian/copyright
+sed -i '/^# Please also look/d'    debian/copyright
+sed -i '/^# different copyright/d' debian/copyright
+
+sed -i "s,<pakname>,${pakname},g" debian/postinst
+sed -i "s,<pakname>,${pakname},g" debian/prerm
+
+dch --create --package ${pakname} --newversion 1.0 --distribution ${distro}
+sed -i 's/ (Closes.*$//' debian/changelog
+
+cat > userinfo << EOF
+PUSER=${username}
+PGECOS="Full Name or description of user ${username}"
+PHOME=/var/lib/${username}
+PSHELL=/bin/sh
+EOF
+
+cat > Makefile << EOF
+all:
+
+install:
+	install -d \$(DESTDIR)/usr/share/${pakname}/
+	install -m 644 userinfo \$(DESTDIR)/usr/share/${pakname}/
+EOF

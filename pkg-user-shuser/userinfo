@@ -1,0 +1,4 @@
+PUSER=shuser2
+PGECOS="Dummy shared user account"
+PHOME=/var/lib/shuser2
+PSHELL=/bin/sh
